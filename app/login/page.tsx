@@ -1,6 +1,7 @@
+// app/login/page.tsx
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -10,7 +11,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -18,11 +19,13 @@ export default function LoginPage() {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await res.json().catch(() => ({}));
+      const data = await res.json();
 
       if (!res.ok) {
         setError(data?.error || "Login failed");
@@ -30,67 +33,98 @@ export default function LoginPage() {
         return;
       }
 
-      router.replace("/dashboard");
-    } catch {
-      setError("Network error. Try again.");
-    } finally {
+      // Login success
+      // TODO: set cookie / token if you implement it on the server
+      // For now, just navigate to dashboard
+      router.push("/dashboard");
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Please try again.");
       setLoading(false);
     }
   }
 
   return (
-    <main className="min-h-screen bg-white text-slate-900">
-      <div className="mx-auto flex min-h-screen max-w-md items-center px-6">
-        <div className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-6">
-            <p className="text-sm font-medium text-slate-600">HireSense ATS</p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight">
-              Admin Login
-            </h1>
-          </div>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#f3f4f6",
+      }}
+    >
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          width: "100%",
+          maxWidth: 400,
+          padding: 24,
+          background: "white",
+          borderRadius: 8,
+          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+        }}
+      >
+        <h1 style={{ fontSize: 24, fontWeight: 600, textAlign: "center" }}>
+          Admin Login
+        </h1>
 
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-slate-700">
-                Username
-              </label>
-              <input
-                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
+        <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <span>Username</span>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            style={{
+              padding: "8px 10px",
+              borderRadius: 4,
+              border: "1px solid #d1d5db",
+            }}
+          />
+        </label>
 
-            <div>
-              <label className="text-sm font-medium text-slate-700">
-                Password
-              </label>
-              <input
-                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+        <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <span>Password</span>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            style={{
+              padding: "8px 10px",
+              borderRadius: 4,
+              border: "1px solid #d1d5db",
+            }}
+          />
+        </label>
 
-            {error ? (
-              <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                {error}
-              </div>
-            ) : null}
+        {error && (
+          <p style={{ color: "red", fontSize: 14, textAlign: "center" }}>
+            {error}
+          </p>
+        )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-            >
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
-          </form>
-        </div>
-      </div>
-    </main>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            marginTop: 8,
+            padding: "10px 12px",
+            borderRadius: 4,
+            border: "none",
+            background: loading ? "#9ca3af" : "#2563eb",
+            color: "white",
+            fontWeight: 600,
+            cursor: loading ? "not-allowed" : "pointer",
+          }}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
+    </div>
   );
 }
