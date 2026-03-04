@@ -22,11 +22,20 @@ export async function POST(request: Request) {
     }
 
     if (username === adminUsername && password === adminPassword) {
-      // For now just return success, you can later add JWT/cookies here
-      return NextResponse.json(
+      const res = NextResponse.json(
         { success: true, message: "Login successful" },
         { status: 200 }
       );
+
+      res.cookies.set("auth_token", "admin-session", {
+        httpOnly: true,
+        secure: false, // set true in production with HTTPS
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 4, // 4 hours
+      });
+
+      return res;
     }
 
     return NextResponse.json(

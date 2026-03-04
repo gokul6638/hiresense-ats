@@ -3,6 +3,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,9 +34,6 @@ export default function LoginPage() {
         return;
       }
 
-      // Login success
-      // TODO: set cookie / token if you implement it on the server
-      // For now, just navigate to dashboard
       router.push("/dashboard");
     } catch (err) {
       console.error(err);
@@ -52,52 +50,77 @@ export default function LoginPage() {
         alignItems: "center",
         justifyContent: "center",
         background: "#f3f4f6",
+        padding: "16px",
       }}
     >
       <form
         onSubmit={handleSubmit}
         style={{
           width: "100%",
-          maxWidth: 400,
-          padding: 24,
+          maxWidth: 440,
+          padding: 28,
           background: "white",
-          borderRadius: 8,
-          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+          borderRadius: 16,
+          boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
           display: "flex",
           flexDirection: "column",
-          gap: 16,
+          gap: 18,
         }}
       >
-        <h1 style={{ fontSize: 24, fontWeight: 600, textAlign: "center" }}>
-          Admin Login
-        </h1>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 12,          // a bit more gap
+            marginBottom: 8,  // slightly larger margin
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="App logo"
+            width={250}
+            height={250}
+            style={{ borderRadius: 40 }}
+          />
+          <h1 style={{ fontSize: 24, fontWeight: 600, textAlign: "center" }}>
+            Admin Login
+          </h1>
+          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center" }}>
+            Sign in to access the dashboard.
+          </p>
+        </div>
 
         <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <span>Username</span>
+          <span style={{ fontSize: 14 }}>Username</span>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            autoComplete="username"
             style={{
-              padding: "8px 10px",
-              borderRadius: 4,
+              padding: "10px 12px",
+              borderRadius: 8,
               border: "1px solid #d1d5db",
+              fontSize: 14,
             }}
           />
         </label>
 
         <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <span>Password</span>
+          <span style={{ fontSize: 14 }}>Password</span>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            autoComplete="current-password"
             style={{
-              padding: "8px 10px",
-              borderRadius: 4,
+              padding: "10px 12px",
+              borderRadius: 8,
               border: "1px solid #d1d5db",
+              fontSize: 14,
             }}
           />
         </label>
@@ -112,13 +135,14 @@ export default function LoginPage() {
           type="submit"
           disabled={loading}
           style={{
-            marginTop: 8,
+            marginTop: 4,
             padding: "10px 12px",
-            borderRadius: 4,
+            borderRadius: 8,
             border: "none",
             background: loading ? "#9ca3af" : "#2563eb",
             color: "white",
             fontWeight: 600,
+            fontSize: 14,
             cursor: loading ? "not-allowed" : "pointer",
           }}
         >

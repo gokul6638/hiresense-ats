@@ -1,4 +1,17 @@
-export default function Home() {
+// app/page.tsx
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
+export default async function Home() {
+  const cookieStore = await cookies();
+  const authToken = cookieStore.get("auth_token")?.value;
+
+  // If logged in, go straight to dashboard
+  if (authToken) {
+    redirect("/dashboard");
+  }
+
+  // If not logged in, show your marketing/landing page
   return (
     <main className="min-h-screen bg-white text-slate-900">
       <div className="mx-auto max-w-5xl px-6 py-14">
