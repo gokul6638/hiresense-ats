@@ -1,14 +1,38 @@
 // app/dashboard/page.tsx
+import ATSAnalyzerCard from "./ATSAnalyzerCard";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import LogoutButton from "./LogoutButton";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET as string;
+
+type JwtPayload = {
+  sub: string;
+  username: string;
+  role: string;
+  iat: number;
+  exp: number;
+};
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
-  const authToken = cookieStore.get("auth_token")?.value;
+  const token = cookieStore.get("auth_token")?.value;
 
-  if (!authToken) {
+  if (!token || !JWT_SECRET) {
+    redirect("/login");
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+
+    // Optional: enforce admin role
+    if (decoded.role !== "admin") {
+      redirect("/login");
+    }
+  } catch (err) {
+    console.error("Invalid JWT:", err);
     redirect("/login");
   }
 
@@ -21,16 +45,16 @@ export default async function DashboardPage() {
       }}
     >
       <header
-    style={{
-       display: "flex",
-       alignItems: "center",
-       justifyContent: "space-between",
-       padding: "12px 16px",   // try 8–12 instead of very large
-       marginBottom: 24,
-       background: "white",
-       borderRadius: 12,
-       boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
-      }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "12px 16px",
+          marginBottom: 24,
+          background: "white",
+          borderRadius: 12,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+        }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <Image
@@ -82,6 +106,9 @@ export default async function DashboardPage() {
             this page.
           </p>
         </div>
+
+        {/* ATS Analyzer card */}
+        <ATSAnalyzerCard />
       </section>
     </main>
   );
