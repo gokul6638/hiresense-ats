@@ -1,4 +1,3 @@
-// app/dashboard/page.tsx
 import ATSAnalyzerCard from "./ATSAnalyzerCard";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -27,7 +26,6 @@ export default async function DashboardPage() {
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
 
-    // Optional: enforce admin role
     if (decoded.role !== "admin") {
       redirect("/login");
     }
@@ -75,7 +73,7 @@ export default async function DashboardPage() {
                 color: "#6b7280",
               }}
             >
-              Manage jobs, applications, and more.
+              Analyze your resume with the Job Description.
             </p>
           </div>
         </div>
@@ -83,31 +81,23 @@ export default async function DashboardPage() {
         <LogoutButton />
       </header>
 
+      {/* Single Overview section that now contains the ATS analyzer */}
       <section
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-          gap: 16,
+          background: "white",
+          borderRadius: 12,
+          padding: 16,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
         }}
       >
-        <div
-          style={{
-            background: "white",
-            borderRadius: 12,
-            padding: 16,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-          }}
-        >
-          <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>
-            Overview
-          </h2>
-          <p style={{ fontSize: 14, color: "#4b5563" }}>
-            This is your protected dashboard. Only logged-in admins can view
-            this page.
-          </p>
-        </div>
+        <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>
+          Overview
+        </h2>
+        <p style={{ fontSize: 14, color: "#4b5563", marginBottom: 16 }}>
+          This is a completely free ATS for personal-use only.
+        </p>
 
-        {/* ATS Analyzer card */}
+        {/* ATS Analyzer inside the Overview content box */}
         <ATSAnalyzerCard />
       </section>
     </main>
